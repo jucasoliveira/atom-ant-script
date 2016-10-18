@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<project name="Demo" basedir=".">
+		
+		<!--
+		<property name="git_message" value="changeset on github"/>
+		<property name="git.repo" value="ant-git-newstuff"/>
+		<property name="git.source" value="git@github.ibm.com:LuDeOliv/ant-git-task-test"/>
+		<property name="git.exe" value="C:\Program Files (x86)\Git\cmd\git.exe"/>
+-->
+		
+		
+		
+		<macrodef name = "git">
+		    <attribute name = "command" />
+		    <element name = "args" optional = "true" />
+		    <sequential>
+		        <echo message = "git @{command}" />
+		        <exec executable = "${git.exe}">
+		            <arg value = "@{command}" />
+		            <args/>
+		        </exec>
+		    </sequential>
+		</macrodef>
+		
+		
+		<macrodef name = "git-clone">
+		    <attribute name = "repository" />
+		    <attribute name = "dest" />
+		    <sequential>
+		        <git command = "clone">
+		            <args>
+		                <arg value = "@{repository}" />
+		                <arg value = "@{dest}" />
+		            </args>
+		        </git>
+		        <git command = "pull" dir = "@{dest}" />
+		    </sequential>
+		</macrodef>
+		
+		
+		
+		
+		
+		
+		
+		<!--
+		
+		
+	 	Script Starts Here.
+		
+
+		-->
+
+		
+		<target name="git-clone" description="Commits all changes to version git">
+			<git command="clone">
+				<args>
+					<arg value = "-v" />
+					<arg value = "${git.source}" />
+	    			<arg value = "${git.repo}" />
+				</args>
+			</git>
+		</target>
+
+		<target name="call-git" >
+			   <ant antfile="ant-git.xml" dir="./${git.repo}">
+			       <target name="${git.target}" />
+			    </ant>
+	   </target>
+		
+	</project>

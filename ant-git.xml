@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<project name="Demo" default="git-push" basedir=".">
+		<property name="commit-message" value="changeset on github made by ${user.name}"/>
+		<property name="Buildfail" value="1"/>
+
+		<macrodef name = "git">
+		    <attribute name = "command" />
+		    <element name = "args" optional = "true" />
+		    <sequential>
+		        <echo message = "git @{command}" />
+		    	<exec executable = "${git.exe}" resultproperty="Buildfail" failonerror="false">
+		            <arg value = "@{command}" />
+		            <args/>
+		        </exec>
+		    </sequential>
+		</macrodef>
+		<macrodef name = "git-clone-pull">
+		    <attribute name = "repository" />
+		    <attribute name = "dest" />
+		    <sequential>
+		        <git command = "clone">
+		            <args>
+		                <arg value = "@{repository}" />
+		                <arg value = "@{dest}" />
+		            </args>
+		        </git>
+		        <git command = "pull" dir = "@{dest}" />
+		    </sequential>
+		</macrodef>
+
+		<target name="git-add" description="add all changes to version git">
+			<git command="add">
+				<args>
+								<arg value="--all" />
+								<arg value="." />
+				</args>
+			</git>
+		</target>
+		<target name="git-commit" description="commit all changes to version git" depends="git-add">
+			<git command="commit">
+				<args>
+								<arg value="-am ${commit-message}" />
+				</args>
+			</git>
+			<git command="push" />
+		</target>
+		<target name="git-push" description="commit all changes to version git" depends="git-commit">
+			<git command="push" />
+		</target>
+
+			<fail message="Git exited non-one error">
+		    <condition>
+		       <not>
+		         <equals arg1="${Buildfail}" arg2="1" />
+		       </not>
+		     </condition>
+		</fail>
+	</project>
